@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Befehle - Lernkarten Pro</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #38bdf8;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        p.subtitle {
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        .counter {
+            background-color: #1e293b;
+            color: #38bdf8;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            border: 1px solid #334155;
+        }
+
+        .card-container {
+            width: 100%;
+            max-width: 500px;
+            height: 260px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border-radius: 16px;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            padding: 25px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .card-front {
+            background-color: #1e293b;
+            border: 2px solid #334155;
+            color: #f8fafc;
+        }
+
+        .card-back {
+            background-color: #0369a1;
+            border: 2px solid #38bdf8;
+            color: #ffffff;
+            transform: rotateY(180deg);
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #38bdf8;
+            margin-bottom: 10px;
+        }
+
+        .card-back .card-title {
+            color: #bae6fd;
+        }
+
+        .card-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .code-text {
+            font-family: 'Courier New', Courier, monospace;
+            background: #0f172a;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 1.3rem;
+            color: #38bdf8;
+            margin-top: 10px;
+            word-break: break-all;
+        }
+
+        .controls {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            background-color: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 10px 22px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #7dd3fc;
+        }
+
+        .hint {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Linux & Netzwerk Befehle</h1>
+    <p class="subtitle">Lernkarten für Fachinformatiker</p>
+    
+    <div class="counter" id="counterText">Karte 1 von 29</div>
+
+    <div class="card-container" onclick="flipCard()">
+        <div class="card" id="flashcard">
+            <div class="card-front">
+                <div class="card-title" id="categoryFront">Navigation</div>
+                <div class="card-text" id="questionText">Wie zeigt man den aktuellen Ordnerpfad an?</div>
+            </div>
+            <div class="card-back">
+                <div class="card-title">Lösung</div>
+                <div class="code-text" id="answerText">pwd</div>
+            </div>
+        </div>
+    </div>
+
+    <p class="hint">Tipp: Klicke auf die Karte zum Umdrehen</p>
+
+    <div class="controls">
+        <button onclick="prevCard(event)">⬅ Vorherige</button>
+        <button onclick="nextCard(event)">Nächste ➔</button>
+    </div>
+
+    <script>
+        const cards = [
+            { cat: "Dateisystem", q: "Wie zeigt man den aktuellen Ordnerpfad an?", a: "pwd" },
+            { cat: "Dateisystem", q: "Wie listet man alle Dateien (inkl. versteckter) auf?", a: "ls -la" },
+            { cat: "Dateisystem", q: "Wie wechselt man in ein Verzeichnis?", a: "cd /pfad/zum/ordner" },
+            { cat: "Dateisystem", q: "Wie erstellt man einen neuen Ordner?", a: "mkdir ordnername" },
+            { cat: "Dateisystem", q: "Wie erstellt man eine leere Datei?", a: "touch dateiname.txt" },
+            { cat: "Dateisystem", q: "Wie kopiert man eine Datei?", a: "cp quelle.txt ziel.txt" },
+            { cat: "Dateisystem", q: "Wie verschiebt oder benennt man eine Datei um?", a: "mv alt.txt neu.txt" },
+            { cat: "Dateisystem", q: "Wie löscht man eine Datei?", a: "rm dateiname.txt" },
+            { cat: "Dateisystem", q: "Wie löscht man einen Ordner samt Inhalt rekursiv?", a: "rm -r ordnername" },
+            { cat: "Text & Suche", q: "Wie zeigt man den Inhalt einer Datei an?", a: "cat dateiname.txt" },
+            { cat: "Text & Suche", q: "Wie liest man eine große Datei seitenweise ein?", a: "less dateiname.txt" },
+            { cat: "Text & Suche", q: "Wie sucht man nach einem bestimmten Begriff in einer Datei?", a: "grep 'suchbegriff' dateiname.txt" },
+            { cat: "Text & Suche", q: "Wie findet man Dateien im System nach Namen?", a: "find / -name 'dateiname'" },
+            { cat: "System & Rechte", q: "Wie ändert man die Zugriffsrechte einer Datei (z.B. 755)?", a: "chmod 755 dateiname" },
+            { cat: "System & Rechte", q: "Wie ändert man den Besitzer einer Datei?", a: "chown user:gruppe dateiname" },
+            { cat: "System & Rechte", q: "Wie wechselt man zum Administrator (Root)?", a: "sudo -i oder su -" },
+            { cat: "System & Rechte", q: "Wie erstellt man einen neuen Benutzer?", a: "sudo useradd -m username" },
+            { cat: "Netzwerk", q: "Wie prüft man die IP-Konfiguration der Schnittstellen?", a: "ip a" },
+            { cat: "Netzwerk", q: "Wie testet man die Erreichbarkeit eines Hosts (Ping)?", a: "ping 8.8.8.8" },
+            { cat: "Netzwerk", q: "Wie prüft man aktive Ports und Verbindungen?", a: "ss -tulpn" },
+            { cat: "Netzwerk", q: "Wie zeigt man die Routing-Tabelle an?", a: "ip route" },
+            { cat: "Netzwerk", q: "Wie lädt man eine Datei über das Terminal herunter?", a: "wget https://beispiel.de/datei.zip" },
+            { cat: "Dienste & Prozesse", q: "Wie listet man laufende Prozesse auf?", a: "ps aux" },
+            { cat: "Dienste & Prozesse", q: "Wie beendet man einen Prozess anhand seiner PID?", a: "kill PID" },
+            { cat: "Dienste & Prozesse", q: "Wie steuert man Systemd-Dienste (z.B. Apache starten)?", a: "sudo systemctl start apache2" },
+            { cat: "Dienste & Prozesse", q: "Wie prüft man den Status eines Dienstes?", a: "sudo systemctl status apache2" },
+            { cat: "Pakete & Speicher", q: "Wie aktualisiert man die Paketlisten unter Ubuntu?", a: "sudo apt update" },
+            { cat: "Pakete & Speicher", q: "Wie installiert man ein neues Paket?", a: "sudo apt install paketname" },
+            { cat: "Pakete & Speicher", q: "Wie prüft man den freien Speicherplatz der Festplatten?", a: "df -h" }
+        ];
+
+        let currentIndex = 0;
+
+        function updateDisplay() {
+            document.getElementById('categoryFront').innerText = cards[currentIndex].cat;
+            document.getElementById('questionText').innerText = cards[currentIndex].q;
+            document.getElementById('answerText').innerText = cards[currentIndex].a;
+            document.getElementById('counterText').innerText = `Karte ${currentIndex + 1} von ${cards.length}`;
+        }
+
+        function flipCard() {
+            document.getElementById('flashcard').classList.toggle('flipped');
+        }
+
+        function nextCard(event) {
+            event.stopPropagation();
+            const card = document.getElementById('flashcard');
+            if (card.classList.contains('flipped')) {
+                card.classList.remove('flipped');
+                setTimeout(() => {
+                    currentIndex = (currentIndex + 1) % cards.length;
+                    updateDisplay();
+                }, 300);
+            } else {
+                currentIndex = (currentIndex + 1) % cards.length;
+                updateDisplay();
+            }
+        }
+
+        function prevCard(event) {
+            event.stopPropagation();
+            const card = document.getElementById('flashcard');
+            if (card.classList.contains('flipped')) {
+                card.classList.remove('flipped');
+                setTimeout(() => {
+                    currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+                    updateDisplay();
+                }, 300);
+            } else {
+                currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+                updateDisplay();
+            }
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
